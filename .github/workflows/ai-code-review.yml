@@ -1,0 +1,314 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: AI Code Review
+        uses: actions/github-script@v7
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          script: |
+            const { execSync } = require('child_process');
+
+            // === HELPER: Call Claude API ===
+            async function callClaude(systemPrompt, userPrompt, maxTokens = 4096) {
+              const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'x-api-key': process.env.ANTHROPIC_API_KEY,
+                  'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                  model: 'claude-sonnet-4-20250514',
+                  max_tokens: maxTokens,
+                  system: systemPrompt,
+                  messages: [{ role: 'user', content: userPrompt }]
+                })
+              });
+              if (!response.ok) throw new Error(await response.text());
+              const data = await response.json();
+              return data.content[0].text;
+            }
+
+            // === HELPER: Get file diff ===
+            function getFileDiff(file) {
+              try {
+                return execSync(
+                  `git diff origin/${{ github.base_ref }}...HEAD -- "${file}"`,
+                  { maxBuffer: 10 * 1024 * 1024 }
+                ).toString();
+              } catch { return ''; }
+            }
+
+            // === SPECIALIZED AGENT PROMPTS ===
+            const AGENTS = {
+              react: {
+                name: '⚛️ React/Next.js',
+                system: `You are a React and Next.js expert code reviewer.
+
+            You specialize in:
+            - React hooks rules (exhaustive deps, conditional hooks)
+            - Component patterns (composition, prop drilling, state management)
+            - Next.js App Router (server/client components, metadata, caching)
+            - Performance optimization (memo, useMemo, useCallback, bundle size)
+            - Accessibility (ARIA attributes, semantic HTML, keyboard navigation)
+
+            Review style:
+            - Be concise and actionable
+            - Reference specific line numbers
+            - Suggest concrete fixes
+            - Prioritize by impact`,
+                emoji: '⚛️'
+              },
+              security: {
+                name: '🔒 Security',
+                system: `You are a security-focused code reviewer.
+
+            You specialize in detecting:
+            - XSS vulnerabilities (innerHTML, user input rendering)
+            - Injection attacks (SQL, NoSQL, command injection)
+            - Authentication/authorization flaws
+            - CSRF vulnerabilities
+            - Exposed secrets, API keys, credentials
+            - Insecure data handling
+            - Missing input validation/sanitization
+            - Insecure cookies or headers
+
+            Review style:
+            - Flag security issues with severity (CRITICAL, HIGH, MEDIUM, LOW)
+            - Explain the attack vector briefly
+            - Provide secure alternatives
+            - Never skip potential vulnerabilities`,
+                emoji: '🔒'
+              },
+              architecture: {
+                name: '🏗️ Architecture',
+                system: `You are a software architecture code reviewer.
+
+            You evaluate:
+            - SOLID principles adherence
+            - Design pattern usage and appropriateness
+            - Code organization and modularity
+            - Separation of concerns
+            - Dependency management and coupling
+            - Error handling patterns
+            - API design consistency
+            - Scalability and maintainability
+
+            Review style:
+            - Focus on structural issues, not style
+            - Consider long-term maintainability
+            - Suggest refactoring patterns when needed
+            - Balance pragmatism with best practices`,
+                emoji: '🏗️'
+              },
+              quality: {
+                name: '✨ Code Quality',
+                system: `You are a code quality expert focused on readability and maintainability.
+
+            You evaluate:
+            - DRY violations (duplicated code, copy-paste patterns)
+            - Naming conventions (clear, descriptive names for variables, functions, classes)
+            - Code complexity (cyclomatic complexity, deep nesting, long functions >50 lines)
+            - Readability (unclear logic, magic numbers, missing context)
+            - Consistency (inconsistent patterns, mixed styles)
+            - Documentation (missing JSDoc for public APIs, unclear function purposes)
+            - Testing hints (suggest edge cases that should be tested)
+
+            Review style:
+            - Be constructive, not nitpicky
+            - Focus on issues that impact maintainability
+            - Suggest specific improvements with examples
+            - Prioritize: critical readability > DRY > naming > docs`,
+                emoji: '✨'
+              }
+            };
+
+            // === GET CHANGED FILES ===
+            const changedFiles = execSync(
+              `git diff --name-only origin/${{ github.base_ref }}...HEAD`
+            ).toString().trim().split('\n').filter(f => f);
+
+            const codeFiles = changedFiles.filter(f =>
+              /\.(ts|tsx|js|jsx|json|css|md)$/.test(f)
+            );
+
+            if (codeFiles.length === 0) {
+              console.log('No code files changed');
+              return;
+            }
+
+            // === GET ALL DIFFS ===
+            let totalDiffSize = 0;
+            const fileDiffs = {};
+            for (const file of codeFiles) {
+              fileDiffs[file] = getFileDiff(file);
+              totalDiffSize += fileDiffs[file].length;
+            }
+
+            console.log(`Files: ${codeFiles.length}, Diff size: ${(totalDiffSize/1024).toFixed(1)}KB`);
+
+            // === ORCHESTRATOR: Analyze and assign tasks ===
+            const prTitle = context.payload.pull_request?.title || '';
+            const prBody = (context.payload.pull_request?.body || '').substring(0, 500);
+
+            const orchestratorPrompt = `Analyze this PR and determine which specialist agents should review it.
+
+            PR Title: ${prTitle}
+            PR Description: ${prBody || 'None'}
+
+            Changed files:
+            ${codeFiles.map(f => `- ${f}`).join('\n')}
+
+            Assign files to specialist agents based on content:
+            - "react": React/Next.js components, hooks, pages, UI code
+            - "security": API routes, auth, data handling, user input
+            - "architecture": Core logic, utilities, types, config, structure
+            - "quality": All code files for readability, DRY, naming, complexity review
+
+            A file can be assigned to MULTIPLE agents if relevant.
+
+            Respond with ONLY valid JSON:
+            {
+              "assignments": {
+                "react": ["file1.tsx", "file2.tsx"],
+                "security": ["api/route.ts", "auth.ts"],
+                "architecture": ["utils.ts", "types.ts"],
+                "quality": ["file1.tsx", "utils.ts", "api/route.ts"]
+              },
+              "summary": "Brief description of what this PR does"
+            }
+
+            Rules:
+            - Assign each file to at least one agent
+            - Security agent should review ANY file with user input, API calls, or auth
+            - React agent reviews all .tsx/.jsx component files
+            - Architecture agent reviews structural changes, utils, types
+            - Quality agent reviews ALL code files for readability and maintainability`;
+
+            let assignments;
+            let prSummary = '';
+            try {
+              const orchestratorResponse = await callClaude(
+                'You are a code review orchestrator that assigns files to specialist reviewers.',
+                orchestratorPrompt,
+                2048
+              );
+              const jsonMatch = orchestratorResponse.match(/\{[\s\S]*\}/);
+              const parsed = JSON.parse(jsonMatch[0]);
+              assignments = parsed.assignments;
+              prSummary = parsed.summary || '';
+              console.log('Orchestrator assignments:', JSON.stringify(assignments));
+            } catch (e) {
+              console.log('Orchestrator failed, using default assignments');
+              // Fallback: assign by file extension
+              assignments = {
+                react: codeFiles.filter(f => /\.(tsx|jsx)$/.test(f)),
+                security: codeFiles.filter(f => /api|auth|login|session/i.test(f)),
+                architecture: codeFiles.filter(f => /\.(ts|js|json)$/.test(f)),
+                quality: codeFiles // Quality agent reviews all files
+              };
+            }
+
+            // === RUN SPECIALIST AGENTS IN PARALLEL ===
+            const reviewPromises = Object.entries(assignments)
+              .filter(([_, files]) => files && files.length > 0)
+              .map(async ([agentKey, files]) => {
+                const agent = AGENTS[agentKey];
+                if (!agent) return null;
+
+                const agentDiff = files
+                  .map(f => fileDiffs[f] || '')
+                  .filter(d => d)
+                  .join('\n');
+
+                if (!agentDiff.trim()) return null;
+
+                // Truncate if too large
+                const truncatedDiff = agentDiff.length > 80000
+                  ? agentDiff.substring(0, 80000) + '\n... [truncated] ...'
+                  : agentDiff;
+
+                console.log(`Running ${agent.name} agent on ${files.length} files...`);
+
+                const review = await callClaude(
+                  agent.system,
+                  `Review these files for a Next.js/TypeScript project.
+
+            Files being reviewed: ${files.join(', ')}
+
+            Provide your review in this format:
+            ### ${agent.name} Review
+
+            [Your findings organized by severity]
+
+            If no issues found, say: "✅ No issues found"
+
+            \`\`\`diff
+            ${truncatedDiff}
+            \`\`\`
+            `
+                );
+
+                return {
+                  agent: agentKey,
+                  name: agent.name,
+                  emoji: agent.emoji,
+                  files: files,
+                  review: review
+                };
+              });
+
+            const reviews = (await Promise.all(reviewPromises)).filter(r => r !== null);
+
+            // === CONSOLIDATE AND POST REVIEW ===
+            let reviewBody = `## 🤖 AI Code Review\n\n`;
+            reviewBody += `📁 **Files reviewed:** ${codeFiles.length}\n`;
+            reviewBody += `📊 **Diff size:** ${(totalDiffSize/1024).toFixed(1)}KB\n`;
+            reviewBody += `🔀 **Review mode:** Multi-agent (${reviews.map(r => r.emoji).join(' ')})\n`;
+
+            if (prSummary) {
+              reviewBody += `\n> ${prSummary}\n`;
+            }
+
+            reviewBody += `\n---\n\n`;
+
+            if (reviews.length === 0) {
+              reviewBody += `✅ **LGTM** - No issues found by any specialist agent.\n`;
+            } else {
+              for (const r of reviews) {
+                reviewBody += `${r.review}\n\n---\n\n`;
+              }
+            }
+
+            reviewBody += `\n*Powered by Claude AI - Multi-Agent Review System*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: reviewBody
+            });
+
+            console.log('Review posted successfully');
