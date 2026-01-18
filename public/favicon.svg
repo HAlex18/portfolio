@@ -1,0 +1,25 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Favicon - 32x32, static, optimized for small size -->
+  
+  <!-- Optional: dark background for favicon -->
+  <rect width="32" height="32" rx="6" fill="#030308"/>
+  
+  <!-- Orbital Ring (simplified for small size) -->
+  <g transform="translate(3, 8)">
+    <ellipse 
+      cx="13" 
+      cy="8" 
+      rx="11" 
+      ry="4.5" 
+      stroke="#d4a054" 
+      stroke-width="1.5" 
+      fill="none"
+      transform="rotate(-15, 13, 8)"
+    />
+    
+    <!-- Stars (fewer, larger for visibility at small size) -->
+    <circle cx="5" cy="4" r="2" fill="#f5c97a"/>
+    <circle cx="22" cy="7" r="1.5" fill="#f5c97a" opacity="0.8"/>
+    <circle cx="17" cy="13" r="1.8" fill="#f5c97a" opacity="0.9"/>
+  </g>
+</svg>
