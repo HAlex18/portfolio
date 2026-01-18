@@ -264,7 +264,7 @@ export function AIChatbot() {
                   width: '8px',
                   height: '8px',
                   borderRadius: '50%',
-                  background: '#22c55e',
+                  background: COLORS.success,
                   animation: 'pulse 2s ease-in-out infinite',
                 }}
               />

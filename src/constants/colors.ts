@@ -17,4 +17,8 @@ export const COLORS = {
   textDim: '#64748b',
   border: 'rgba(255,255,255,0.1)',
   cardBg: 'rgba(255,255,255,0.03)',
+
+  // Status colors (colorblind-safe)
+  success: 'var(--color-success)',
+  error: 'var(--color-error)',
 };

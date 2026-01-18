@@ -184,7 +184,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                {t('form.name')} <span style={{ color: '#ef4444' }}>*</span>
+                {t('form.name')} <span style={{ color: COLORS.error }}>*</span>
               </label>
               <input
                 type="text"
@@ -257,7 +257,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                {t('form.email')} <span style={{ color: '#ef4444' }}>*</span>
+                {t('form.email')} <span style={{ color: COLORS.error }}>*</span>
               </label>
               <input
                 type="email"
@@ -291,7 +291,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                {t('form.message')} <span style={{ color: '#ef4444' }}>*</span>
+                {t('form.message')} <span style={{ color: COLORS.error }}>*</span>
               </label>
               <textarea
                 value={formData.message}
@@ -319,10 +319,10 @@ export function ContactSection() {
               <div
                 style={{
                   padding: '12px 16px',
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  background: 'rgba(249, 115, 22, 0.1)',
+                  border: '1px solid rgba(249, 115, 22, 0.3)',
                   borderRadius: '8px',
-                  color: '#ef4444',
+                  color: COLORS.error,
                   fontSize: '14px',
                   fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui",
                 }}
@@ -335,10 +335,10 @@ export function ContactSection() {
               <div
                 style={{
                   padding: '12px 16px',
-                  background: 'rgba(34, 197, 94, 0.1)',
-                  border: '1px solid rgba(34, 197, 94, 0.3)',
+                  background: 'rgba(14, 165, 233, 0.1)',
+                  border: '1px solid rgba(14, 165, 233, 0.3)',
                   borderRadius: '8px',
-                  color: '#22c55e',
+                  color: COLORS.success,
                   fontSize: '14px',
                   fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui",
                 }}
