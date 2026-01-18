@@ -49,17 +49,6 @@ export function ProjectsSection() {
         >
           Featured Projects
         </h2>
-        <p
-          style={{
-            fontSize: '16px',
-            color: COLORS.textMuted,
-            fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui",
-            margin: '20px auto 0',
-            maxWidth: '400px',
-          }}
-        >
-          Hover over each planet to explore
-        </p>
       </div>
 
       {/* Planet Gallery */}

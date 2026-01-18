@@ -1,0 +1,57 @@
+{
+  "hero": {
+    "greeting": "私の世界へようこそ",
+    "name": "溝口 裕子",
+    "title": "システム開発 • Web開発 • AI開発",
+    "viewProjects": "プロジェクトを見る",
+    "contactMe": "お問い合わせ",
+    "scroll": "スクロール"
+  },
+  "about": {
+    "label": "About Me",
+    "headingLine1": "未来を創る、",
+    "headingLine2": "一行ずつ",
+    "bio1": "複雑な問題にエレガントな解決策を見出すことに情熱を注ぐ開発者です。システムアーキテクチャ、Web開発、人工知能にまたがる専門知識を活かし、クリーンで効率的なコードでアイデアを形にしています。",
+    "bio2": "コーディング以外の時間は、新しい技術の探求、オープンソースへの貢献、最新のAI研究への取り組みに費やしています。継続的な学習と可能性の限界を押し広げることを信条としています。",
+    "linkedinText": "LinkedInで経歴を見る",
+    "stats": {
+      "yearsExperience": "年の経験",
+      "projectsCompleted": "完了プロジェクト",
+      "technologies": "使用技術",
+      "linesOfCode": "コード行数"
+    }
+  },
+  "contact": {
+    "label": "CONTACT",
+    "heading": "一緒に仕事をしましょう",
+    "description": "プロジェクトのアイデアがありますか？ぜひお聞かせください。メッセージをお送りいただければ、素晴らしいものを一緒に作りましょう。",
+    "form": {
+      "name": "お名前",
+      "company": "会社名",
+      "email": "メールアドレス",
+      "message": "メッセージ",
+      "submit": "メッセージを送信",
+      "submitting": "送信中..."
+    },
+    "validation": {
+      "nameRequired": "お名前を入力してください（2文字以上）",
+      "emailInvalid": "有効なメールアドレスを入力してください",
+      "messageRequired": "メッセージを入力してください（10文字以上）",
+      "rateLimited": "送信回数が多すぎます。1時間後に再度お試しください。"
+    },
+    "success": "メッセージが送信されました！折り返しご連絡いたします。",
+    "socialHeading": "または直接ご連絡ください"
+  },
+  "chat": {
+    "title": "ポートフォリオアシスタント",
+    "subtitle": "Claude AIで動作",
+    "welcomeMessage": "こんにちは！👋 この開発者について何でもお聞きください。スキル、プロジェクト、経験についてお答えします！",
+    "placeholder": "質問を入力...",
+    "disclaimer": "AIは間違える可能性があります • AIスキルのデモ用",
+    "rateLimited": "メッセージの送信回数が多すぎます。1時間後に再度お試しいただくか、下のお問い合わせフォームをご利用ください。",
+    "connectionError": "接続に問題が発生しました。再度お試しいただくか、下のお問い合わせフォームをご利用ください。",
+    "ariaOpenChat": "チャットを開く",
+    "ariaCloseChat": "チャットを閉じる",
+    "ariaDismissChat": "チャットを閉じる"
+  }
+}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { COLORS } from '@/constants/colors';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import type { NavItem, NavigationProps } from '@/types';
 
 const navItems: NavItem[] = [
@@ -88,7 +89,7 @@ export function Navigation({ activeSection }: NavigationProps) {
 
         {/* Desktop Nav Links */}
         {!isMobile && (
-          <div style={{ display: 'flex', gap: '32px' }}>
+          <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -123,6 +124,7 @@ export function Navigation({ activeSection }: NavigationProps) {
                 )}
               </button>
             ))}
+            <LanguageSwitcher />
           </div>
         )}
 
@@ -258,6 +260,18 @@ export function Navigation({ activeSection }: NavigationProps) {
               )}
             </button>
           ))}
+
+          {/* Language Switcher in Mobile Menu */}
+          <div
+            style={{
+              marginTop: '24px',
+              opacity: isMobileMenuOpen ? 1 : 0,
+              transition: 'opacity 0.3s ease',
+              transitionDelay: isMobileMenuOpen ? '0.25s' : '0s',
+            }}
+          >
+            <LanguageSwitcher />
+          </div>
 
           {/* Accessibility note at bottom */}
           <div

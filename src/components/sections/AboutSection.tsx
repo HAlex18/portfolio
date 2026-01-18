@@ -1,16 +1,18 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { COLORS } from '@/constants/colors';
-import type { Stat } from '@/types';
-
-const stats: Stat[] = [
-  { number: '5+', label: 'Years Experience' },
-  { number: '50+', label: 'Projects Completed' },
-  { number: '20+', label: 'Technologies' },
-  { number: '∞', label: 'Lines of Code' },
-];
 
 export function AboutSection() {
+  const t = useTranslations('about');
+
+  const stats = [
+    { number: '5+', label: t('stats.yearsExperience') },
+    { number: '50+', label: t('stats.projectsCompleted') },
+    { number: '20+', label: t('stats.technologies') },
+    { number: '∞', label: t('stats.linesOfCode') },
+  ];
+
   return (
     <section
       id="about"
@@ -33,7 +35,7 @@ export function AboutSection() {
             marginBottom: '16px',
           }}
         >
-          About Me
+          {t('label')}
         </p>
 
         <h2
@@ -46,9 +48,9 @@ export function AboutSection() {
             letterSpacing: '-0.02em',
           }}
         >
-          Building the Future,
+          {t('headingLine1')}
           <br />
-          One Line at a Time
+          {t('headingLine2')}
         </h2>
 
         <div
@@ -69,9 +71,7 @@ export function AboutSection() {
                 marginBottom: '24px',
               }}
             >
-              I&apos;m a passionate developer who loves crafting elegant solutions to complex problems. With expertise
-              spanning system architecture, web development, and artificial intelligence, I bring ideas to life through
-              clean, efficient code.
+              {t('bio1')}
             </p>
             <p
               style={{
@@ -81,9 +81,7 @@ export function AboutSection() {
                 lineHeight: 1.8,
               }}
             >
-              When I&apos;m not coding, you&apos;ll find me exploring new technologies, contributing to open source, or
-              diving deep into the latest AI research. I believe in continuous learning and pushing the boundaries of
-              what&apos;s possible.
+              {t('bio2')}
             </p>
 
             {/* LinkedIn Link */}
@@ -116,7 +114,7 @@ export function AboutSection() {
               }}
             >
               <span>💼</span>
-              <span>View my experience on LinkedIn</span>
+              <span>{t('linkedinText')}</span>
               <span style={{ marginLeft: '4px' }}>→</span>
             </a>
           </div>

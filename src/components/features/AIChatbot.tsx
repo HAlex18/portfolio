@@ -1,23 +1,29 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { COLORS } from '@/constants/colors';
 import type { ChatMessage } from '@/types';
 
 export function AIChatbot() {
+  const t = useTranslations('chat');
   const [isOpen, setIsOpen] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: 'assistant',
-      content:
-        "Hey! 👋 I'm an AI assistant here to tell you about this developer. Ask me anything about their skills, projects, or experience!",
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initialize welcome message when component mounts
+  useEffect(() => {
+    setMessages([
+      {
+        role: 'assistant',
+        content: t('welcomeMessage'),
+      },
+    ]);
+  }, [t]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,7 +69,7 @@ export function AIChatbot() {
           ...prev,
           {
             role: 'assistant',
-            content: "You've sent too many messages. Please try again in an hour, or use the contact form below. 🙏",
+            content: t('rateLimited'),
           },
         ]);
         // Reset rate limit state after 1 hour
@@ -88,7 +94,7 @@ export function AIChatbot() {
         ...prev,
         {
           role: 'assistant',
-          content: "Oops! I'm having connection issues. Please try again or use the contact form below.",
+          content: t('connectionError'),
         },
       ]);
     } finally {
@@ -96,7 +102,7 @@ export function AIChatbot() {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -117,7 +123,7 @@ export function AIChatbot() {
         {/* Small X to dismiss */}
         <button
           onClick={handleClose}
-          aria-label="Dismiss chat"
+          aria-label={t('ariaDismissChat')}
           style={{
             position: 'absolute',
             top: '-8px',
@@ -151,7 +157,7 @@ export function AIChatbot() {
         {/* Main chat button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          aria-label={isOpen ? 'Close chat' : 'Open chat'}
+          aria-label={isOpen ? t('ariaCloseChat') : t('ariaOpenChat')}
           style={{
             width: '60px',
             height: '60px',
@@ -241,7 +247,7 @@ export function AIChatbot() {
                 fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui",
               }}
             >
-              Portfolio Assistant
+              {t('title')}
             </div>
             <div
               style={{
@@ -262,7 +268,7 @@ export function AIChatbot() {
                   animation: 'pulse 2s ease-in-out infinite',
                 }}
               />
-              Powered by Claude AI
+              {t('subtitle')}
             </div>
           </div>
         </div>
@@ -343,8 +349,8 @@ export function AIChatbot() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask about me..."
+              onKeyDown={handleKeyDown}
+              placeholder={t('placeholder')}
               style={{
                 flex: 1,
                 padding: '12px 16px',
@@ -396,7 +402,7 @@ export function AIChatbot() {
               marginTop: '10px',
             }}
           >
-            AI may make mistakes • Built to showcase AI skills
+            {t('disclaimer')}
           </p>
         </div>
       </div>

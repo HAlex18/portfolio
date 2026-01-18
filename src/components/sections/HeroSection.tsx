@@ -1,8 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { COLORS } from '@/constants/colors';
 
 export function HeroSection() {
+  const t = useTranslations('hero');
   return (
     <section
       id="home"
@@ -44,7 +46,7 @@ export function HeroSection() {
           animation: 'fadeInUp 0.8s ease-out',
         }}
       >
-        Welcome to my universe
+        {t('greeting')}
       </p>
 
       {/* Name */}
@@ -60,7 +62,7 @@ export function HeroSection() {
           animation: 'fadeInUp 0.8s ease-out 0.1s both',
         }}
       >
-        Your Name
+        {t('name')}
       </h1>
 
       {/* Title */}
@@ -74,7 +76,7 @@ export function HeroSection() {
           animation: 'fadeInUp 0.8s ease-out 0.2s both',
         }}
       >
-        System Developer • Web Developer • AI Developer
+        {t('title')}
       </h2>
 
       {/* CTA Buttons */}
@@ -114,7 +116,7 @@ export function HeroSection() {
             e.currentTarget.style.borderColor = COLORS.accent;
           }}
         >
-          View Projects
+          {t('viewProjects')}
         </button>
         <button
           onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
@@ -136,7 +138,7 @@ export function HeroSection() {
           onMouseOver={(e) => (e.currentTarget.style.borderColor = COLORS.accent)}
           onMouseOut={(e) => (e.currentTarget.style.borderColor = COLORS.border)}
         >
-          Contact Me
+          {t('contactMe')}
         </button>
       </div>
 
@@ -154,7 +156,7 @@ export function HeroSection() {
           animation: 'bounce 2s ease-in-out infinite',
         }}
       >
-        <span style={{ fontSize: '12px', color: COLORS.textDim, letterSpacing: '0.1em' }}>SCROLL</span>
+        <span style={{ fontSize: '12px', color: COLORS.textDim, letterSpacing: '0.1em' }}>{t('scroll')}</span>
         <div
           style={{
             width: '1px',

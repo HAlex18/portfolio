@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { COLORS } from '@/constants/colors';
 import type { SocialLink, ContactFormData } from '@/types';
 
@@ -19,6 +20,7 @@ const socialLinks: SocialLink[] = [
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 export function ContactSection() {
+  const t = useTranslations('contact');
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     company: null,
@@ -35,20 +37,20 @@ export function ContactSection() {
     // Client-side validation
     if (!formData.name.trim() || formData.name.trim().length < 2) {
       setStatus('error');
-      setErrorMessage('Please enter your name (minimum 2 characters)');
+      setErrorMessage(t('validation.nameRequired'));
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim() || !emailRegex.test(formData.email)) {
       setStatus('error');
-      setErrorMessage('Please enter a valid email address');
+      setErrorMessage(t('validation.emailInvalid'));
       return;
     }
 
     if (!formData.message.trim() || formData.message.trim().length < 10) {
       setStatus('error');
-      setErrorMessage('Please enter a message (minimum 10 characters)');
+      setErrorMessage(t('validation.messageRequired'));
       return;
     }
 
@@ -74,7 +76,7 @@ export function ContactSection() {
 
       if (response.status === 429) {
         setStatus('error');
-        setErrorMessage('Too many submissions. Please try again in an hour.');
+        setErrorMessage(t('validation.rateLimited'));
         return;
       }
 
@@ -113,7 +115,7 @@ export function ContactSection() {
               marginBottom: '16px',
             }}
           >
-            Get In Touch
+            {t('label')}
           </p>
           <h2
             style={{
@@ -124,7 +126,7 @@ export function ContactSection() {
               margin: 0,
             }}
           >
-            Let&apos;s Work Together
+            {t('heading')}
           </h2>
           <p
             style={{
@@ -136,8 +138,7 @@ export function ContactSection() {
               lineHeight: 1.7,
             }}
           >
-            Have a project in mind? I&apos;d love to hear from you. Send me a message and let&apos;s create something
-            amazing.
+            {t('description')}
           </p>
         </div>
 
@@ -183,7 +184,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                Name <span style={{ color: '#ef4444' }}>*</span>
+                {t('form.name')} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
@@ -217,7 +218,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                Company
+                {t('form.company')}
               </label>
               <input
                 type="text"
@@ -256,7 +257,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                Email <span style={{ color: '#ef4444' }}>*</span>
+                {t('form.email')} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="email"
@@ -290,7 +291,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                Message <span style={{ color: '#ef4444' }}>*</span>
+                {t('form.message')} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <textarea
                 value={formData.message}
@@ -342,7 +343,7 @@ export function ContactSection() {
                   fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui",
                 }}
               >
-                Message sent successfully! I&apos;ll get back to you soon.
+                {t('success')}
               </div>
             )}
 
@@ -376,7 +377,7 @@ export function ContactSection() {
                 }
               }}
             >
-              {status === 'submitting' ? 'Sending...' : 'Send Message ✦'}
+              {status === 'submitting' ? t('form.submitting') : t('form.submit')}
             </button>
           </form>
 
@@ -391,7 +392,7 @@ export function ContactSection() {
                 marginBottom: '24px',
               }}
             >
-              Or reach out directly
+              {t('socialHeading')}
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {socialLinks.map((link, i) => (
