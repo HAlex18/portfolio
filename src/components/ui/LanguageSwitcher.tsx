@@ -13,7 +13,7 @@ export function LanguageSwitcher() {
   const switchLocale = (newLocale: string) => {
     const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
     startTransition(() => {
-      router.push(newPath);
+      router.replace(newPath, { scroll: false });
     });
   };
 
