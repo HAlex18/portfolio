@@ -77,7 +77,7 @@ export function Footer() {
           fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui",
         }}
       >
-        © {new Date().getFullYear()} Your Name. Built with Next.js & TypeScript.
+        &copy; {new Date().getFullYear()} Hiroko.A.Mizoguchi
       </p>
     </footer>
   );
