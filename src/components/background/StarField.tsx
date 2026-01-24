@@ -1,11 +1,12 @@
 'use client';
 
 import { COLORS } from '@/constants/colors';
+import { CONFIG } from '@/config';
 import type { Star } from '@/types';
 import { seededRandom, round } from '@/utils/random';
 
 // Pre-generate deterministic star data to avoid hydration mismatch
-const STAR_DATA: Star[] = Array.from({ length: 250 }, (_, i) => ({
+const STAR_DATA: Star[] = Array.from({ length: CONFIG.ui.starCount }, (_, i) => ({
   id: i,
   x: round(seededRandom(i * 10) * 100),
   y: round(seededRandom(i * 20) * 100),

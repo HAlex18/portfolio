@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { COLORS } from '@/constants/colors';
+import { CONFIG } from '@/config';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import type { NavItem, NavigationProps } from '@/types';
 
@@ -21,8 +22,8 @@ export function Navigation({ activeSection }: NavigationProps) {
   // Check viewport width
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
+      setIsMobile(window.innerWidth < CONFIG.ui.mobileBreakpoint);
+      if (window.innerWidth >= CONFIG.ui.mobileBreakpoint) {
         setIsMobileMenuOpen(false);
       }
     };

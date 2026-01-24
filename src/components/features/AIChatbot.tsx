@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { COLORS } from '@/constants/colors';
+import { CONFIG } from '@/config';
 import type { ChatMessage } from '@/types';
 
 export function AIChatbot() {
@@ -14,6 +15,16 @@ export function AIChatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const rateLimitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (rateLimitTimeoutRef.current) {
+        clearTimeout(rateLimitTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Initialize welcome message when component mounts
   useEffect(() => {
@@ -73,7 +84,7 @@ export function AIChatbot() {
           },
         ]);
         // Reset rate limit state after 1 hour
-        setTimeout(() => setIsRateLimited(false), 60 * 60 * 1000);
+        rateLimitTimeoutRef.current = setTimeout(() => setIsRateLimited(false), CONFIG.ui.rateLimitResetMs);
         return;
       }
 

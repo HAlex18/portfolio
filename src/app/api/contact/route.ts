@@ -1,50 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { CONFIG } from '@/config';
+import { getClientIP, contactRateLimiter } from '@/utils/rateLimit';
+import { sanitizeInput, isValidEmail, sanitizeEmailForHeader } from '@/utils/validation';
 
 // ============================================
 // CONTACT API ROUTE - Secure Form Submission
 // ============================================
-
-// In-memory rate limiting (resets on server restart)
-// For production, use Redis or Vercel KV
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT = 5; // submissions per hour
-const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in ms
-
-function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  return forwarded?.split(',')[0]?.trim() || realIP || 'unknown';
-}
-
-function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
-  const now = Date.now();
-  const record = rateLimitMap.get(ip);
-
-  if (!record || now > record.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return { allowed: true, remaining: RATE_LIMIT - 1 };
-  }
-
-  if (record.count >= RATE_LIMIT) {
-    return { allowed: false, remaining: 0 };
-  }
-
-  record.count++;
-  return { allowed: true, remaining: RATE_LIMIT - record.count };
-}
-
-function sanitizeInput(text: string, maxLength: number = 1000): string {
-  return text
-    .replace(/<[^>]*>/g, '')
-    .trim()
-    .slice(0, maxLength);
-}
-
-function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email) && email.length <= 254;
-}
 
 interface ContactRequestBody {
   name: string;
@@ -67,19 +29,19 @@ export async function POST(request: NextRequest) {
 
     // Rate limiting
     const clientIP = getClientIP(request);
-    const { allowed, remaining } = checkRateLimit(clientIP);
+    const { allowed, remaining } = contactRateLimiter.check(clientIP);
 
     if (!allowed) {
       return NextResponse.json(
         {
           error: 'Too many submissions. Please try again later.',
-          retryAfter: 3600,
+          retryAfter: CONFIG.api.retryAfterSeconds,
         },
         {
           status: 429,
           headers: {
             'X-RateLimit-Remaining': '0',
-            'Retry-After': '3600',
+            'Retry-After': CONFIG.api.retryAfterSeconds.toString(),
           },
         }
       );
@@ -95,10 +57,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate required fields
-    const name = sanitizeInput(body.name || '', 100);
-    const email = sanitizeInput(body.email || '', 254);
-    const message = sanitizeInput(body.message || '', 2000);
-    const company = body.company ? sanitizeInput(body.company, 100) : null;
+    const name = sanitizeInput(body.name || '', CONFIG.api.maxNameLength);
+    const email = sanitizeInput(body.email || '', CONFIG.api.maxEmailLength);
+    const message = sanitizeInput(body.message || '', CONFIG.api.maxContactMessageLength);
+    const company = body.company ? sanitizeInput(body.company, CONFIG.api.maxCompanyLength) : null;
 
     if (!name || name.length < 2) {
       return NextResponse.json({ error: 'Name is required (minimum 2 characters)' }, { status: 400 });
@@ -118,7 +80,7 @@ export async function POST(request: NextRequest) {
     const { error: sendError } = await resend.emails.send({
       from: 'Portfolio Contact <onboarding@resend.dev>',
       to: contactEmail,
-      replyTo: email,
+      replyTo: sanitizeEmailForHeader(email),
       subject: `Portfolio Contact: ${name}${company ? ` (${company})` : ''}`,
       text: `
 New message from your portfolio website:

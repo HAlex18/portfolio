@@ -1,5 +1,6 @@
 'use client';
 
+import { startTransition } from 'react';
 import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
 import { COLORS } from '@/constants/colors';
@@ -11,7 +12,9 @@ export function LanguageSwitcher() {
 
   const switchLocale = (newLocale: string) => {
     const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
-    router.push(newPath);
+    startTransition(() => {
+      router.push(newPath);
+    });
   };
 
   return (
