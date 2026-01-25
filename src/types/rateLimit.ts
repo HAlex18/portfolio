@@ -16,6 +16,7 @@ export interface RateLimitRecord {
 export interface RateLimitConfig {
   limit: number;
   windowMs: number;
+  maxEntries?: number;
 }
 
 /**

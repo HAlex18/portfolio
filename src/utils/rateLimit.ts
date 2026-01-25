@@ -39,6 +39,13 @@ class RateLimiter {
     const now = Date.now();
     const record = this.map.get(ip);
 
+    // Enforce max entries to prevent memory exhaustion
+    const maxEntries = this.config.maxEntries ?? 10000;
+    if (!record && this.map.size >= maxEntries) {
+      // Map is full and this is a new IP - reject to prevent DoS
+      return { allowed: false, remaining: 0 };
+    }
+
     if (!record || now > record.resetTime) {
       this.map.set(ip, { count: 1, resetTime: now + this.config.windowMs });
       return { allowed: true, remaining: this.config.limit - 1 };

@@ -9,10 +9,12 @@ export const CONFIG = {
     chat: {
       limit: 20,
       windowMs: 60 * 60 * 1000, // 1 hour
+      maxEntries: 10000, // Prevent memory exhaustion
     },
     contact: {
       limit: 5,
       windowMs: 60 * 60 * 1000, // 1 hour
+      maxEntries: 10000, // Prevent memory exhaustion
     },
     cleanupIntervalMs: 5 * 60 * 1000, // 5 minutes
   },
