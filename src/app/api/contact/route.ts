@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { CONFIG } from '@/config';
 import { getClientIP, contactRateLimiter } from '@/utils/rateLimit';
-import { sanitizeInput, isValidEmail, sanitizeEmailForHeader } from '@/utils/validation';
+import { sanitizeInput, isValidEmail, sanitizeEmailForHeader, escapeHtml } from '@/utils/validation';
+import { validateOrigin } from '@/utils/csrf';
 
 // ============================================
 // CONTACT API ROUTE - Secure Form Submission
@@ -18,6 +19,10 @@ interface ContactRequestBody {
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF protection - validate Origin header
+    const originError = validateOrigin(request);
+    if (originError) return originError;
+
     // Check API keys
     const resendApiKey = process.env.RESEND_API_KEY;
     const contactEmail = process.env.CONTACT_EMAIL;
@@ -81,7 +86,7 @@ export async function POST(request: NextRequest) {
       from: 'Portfolio Contact <onboarding@resend.dev>',
       to: contactEmail,
       replyTo: sanitizeEmailForHeader(email),
-      subject: `Portfolio Contact: ${name}${company ? ` (${company})` : ''}`,
+      subject: `Portfolio Contact: ${sanitizeEmailForHeader(name)}${company ? ` (${sanitizeEmailForHeader(company)})` : ''}`,
       text: `
 New message from your portfolio website:
 
@@ -119,15 +124,15 @@ IP: ${clientIP}
     <div class="content">
       <div class="field">
         <div class="label">From</div>
-        <div class="value">${name}${company ? ` &middot; ${company}` : ''}</div>
+        <div class="value">${escapeHtml(name)}${company ? ` &middot; ${escapeHtml(company)}` : ''}</div>
       </div>
       <div class="field">
         <div class="label">Email</div>
-        <div class="value"><a href="mailto:${email}">${email}</a></div>
+        <div class="value"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></div>
       </div>
       <div class="field">
         <div class="label">Message</div>
-        <div class="message-box">${message.replace(/\n/g, '<br>')}</div>
+        <div class="message-box">${escapeHtml(message).replace(/\n/g, '<br>')}</div>
       </div>
       <div class="footer">
         Sent from portfolio contact form
