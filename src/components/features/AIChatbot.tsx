@@ -1,48 +1,20 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { COLORS } from '@/constants/colors';
-import { CONFIG } from '@/config';
-import type { ChatMessage } from '@/types';
+import { useChatMessages } from './hooks';
 
 export function AIChatbot() {
   const translations = useTranslations('chat');
   const [isOpen, setIsOpen] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRateLimited, setIsRateLimited] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const rateLimitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (rateLimitTimeoutRef.current) {
-        clearTimeout(rateLimitTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Initialize welcome message when component mounts
-  useEffect(() => {
-    setMessages([
-      {
-        role: 'assistant',
-        content: translations('welcomeMessage'),
-      },
-    ]);
-  }, [translations]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const { messages, input, setInput, isLoading, sendMessage, handleKeyDown, messagesEndRef } = useChatMessages({
+    welcomeMessage: translations('welcomeMessage'),
+    rateLimitedMessage: translations('rateLimited'),
+    connectionErrorMessage: translations('connectionError'),
+  });
 
   // Handle close - dismiss completely
   const handleClose = () => {
@@ -52,73 +24,6 @@ export function AIChatbot() {
 
   // Don't render if dismissed
   if (isDismissed) return null;
-
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading || isRateLimited) return;
-
-    const userMessage: ChatMessage = { role: 'user', content: input.trim() };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
-
-    try {
-      // Call our secure API route instead of Anthropic directly
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [...messages.filter((m) => m.role !== 'assistant' || messages.indexOf(m) !== 0), userMessage],
-        }),
-      });
-
-      // Handle rate limiting
-      if (response.status === 429) {
-        setIsRateLimited(true);
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            content: translations('rateLimited'),
-          },
-        ]);
-        // Reset rate limit state after 1 hour
-        rateLimitTimeoutRef.current = setTimeout(() => setIsRateLimited(false), CONFIG.ui.rateLimitResetMs);
-        return;
-      }
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to get response');
-      }
-
-      const assistantMessage: ChatMessage = {
-        role: 'assistant',
-        content: data.message || 'Sorry, I had trouble responding. Please try again!',
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error(error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: translations('connectionError'),
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
 
   return (
     <>
