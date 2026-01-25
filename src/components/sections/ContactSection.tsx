@@ -20,7 +20,7 @@ const socialLinks: SocialLink[] = [
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 export function ContactSection() {
-  const t = useTranslations('contact');
+  const translations = useTranslations('contact');
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     company: null,
@@ -37,20 +37,20 @@ export function ContactSection() {
     // Client-side validation
     if (!formData.name.trim() || formData.name.trim().length < 2) {
       setStatus('error');
-      setErrorMessage(t('validation.nameRequired'));
+      setErrorMessage(translations('validation.nameRequired'));
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim() || !emailRegex.test(formData.email)) {
       setStatus('error');
-      setErrorMessage(t('validation.emailInvalid'));
+      setErrorMessage(translations('validation.emailInvalid'));
       return;
     }
 
     if (!formData.message.trim() || formData.message.trim().length < 10) {
       setStatus('error');
-      setErrorMessage(t('validation.messageRequired'));
+      setErrorMessage(translations('validation.messageRequired'));
       return;
     }
 
@@ -76,7 +76,7 @@ export function ContactSection() {
 
       if (response.status === 429) {
         setStatus('error');
-        setErrorMessage(t('validation.rateLimited'));
+        setErrorMessage(translations('validation.rateLimited'));
         return;
       }
 
@@ -115,7 +115,7 @@ export function ContactSection() {
               marginBottom: '16px',
             }}
           >
-            {t('label')}
+            {translations('label')}
           </p>
           <h2
             style={{
@@ -126,7 +126,7 @@ export function ContactSection() {
               margin: 0,
             }}
           >
-            {t('heading')}
+            {translations('heading')}
           </h2>
           <p
             style={{
@@ -138,7 +138,7 @@ export function ContactSection() {
               lineHeight: 1.7,
             }}
           >
-            {t('description')}
+            {translations('description')}
           </p>
         </div>
 
@@ -184,7 +184,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                {t('form.name')} <span style={{ color: COLORS.error }}>*</span>
+                {translations('form.name')} <span style={{ color: COLORS.error }}>*</span>
               </label>
               <input
                 type="text"
@@ -218,7 +218,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                {t('form.company')}
+                {translations('form.company')}
               </label>
               <input
                 type="text"
@@ -257,7 +257,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                {t('form.email')} <span style={{ color: COLORS.error }}>*</span>
+                {translations('form.email')} <span style={{ color: COLORS.error }}>*</span>
               </label>
               <input
                 type="email"
@@ -291,7 +291,7 @@ export function ContactSection() {
                   marginBottom: '8px',
                 }}
               >
-                {t('form.message')} <span style={{ color: COLORS.error }}>*</span>
+                {translations('form.message')} <span style={{ color: COLORS.error }}>*</span>
               </label>
               <textarea
                 value={formData.message}
@@ -343,7 +343,7 @@ export function ContactSection() {
                   fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui",
                 }}
               >
-                {t('success')}
+                {translations('success')}
               </div>
             )}
 
@@ -377,7 +377,7 @@ export function ContactSection() {
                 }
               }}
             >
-              {status === 'submitting' ? t('form.submitting') : t('form.submit')}
+              {status === 'submitting' ? translations('form.submitting') : translations('form.submit')}
             </button>
           </form>
 
@@ -392,7 +392,7 @@ export function ContactSection() {
                 marginBottom: '24px',
               }}
             >
-              {t('socialHeading')}
+              {translations('socialHeading')}
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {socialLinks.map((link, i) => (

@@ -7,7 +7,7 @@ import { CONFIG } from '@/config';
 import type { ChatMessage } from '@/types';
 
 export function AIChatbot() {
-  const t = useTranslations('chat');
+  const translations = useTranslations('chat');
   const [isOpen, setIsOpen] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -31,10 +31,10 @@ export function AIChatbot() {
     setMessages([
       {
         role: 'assistant',
-        content: t('welcomeMessage'),
+        content: translations('welcomeMessage'),
       },
     ]);
-  }, [t]);
+  }, [translations]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -80,7 +80,7 @@ export function AIChatbot() {
           ...prev,
           {
             role: 'assistant',
-            content: t('rateLimited'),
+            content: translations('rateLimited'),
           },
         ]);
         // Reset rate limit state after 1 hour
@@ -105,7 +105,7 @@ export function AIChatbot() {
         ...prev,
         {
           role: 'assistant',
-          content: t('connectionError'),
+          content: translations('connectionError'),
         },
       ]);
     } finally {
@@ -134,7 +134,7 @@ export function AIChatbot() {
         {/* Small X to dismiss */}
         <button
           onClick={handleClose}
-          aria-label={t('ariaDismissChat')}
+          aria-label={translations('ariaDismissChat')}
           style={{
             position: 'absolute',
             top: '-8px',
@@ -168,7 +168,7 @@ export function AIChatbot() {
         {/* Main chat button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          aria-label={isOpen ? t('ariaCloseChat') : t('ariaOpenChat')}
+          aria-label={isOpen ? translations('ariaCloseChat') : translations('ariaOpenChat')}
           style={{
             width: '60px',
             height: '60px',
@@ -258,7 +258,7 @@ export function AIChatbot() {
                 fontFamily: "var(--font-space-grotesk), 'Space Grotesk', system-ui",
               }}
             >
-              {t('title')}
+              {translations('title')}
             </div>
             <div
               style={{
@@ -279,7 +279,7 @@ export function AIChatbot() {
                   animation: 'pulse 2s ease-in-out infinite',
                 }}
               />
-              {t('subtitle')}
+              {translations('subtitle')}
             </div>
           </div>
         </div>
@@ -361,7 +361,7 @@ export function AIChatbot() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={t('placeholder')}
+              placeholder={translations('placeholder')}
               style={{
                 flex: 1,
                 padding: '12px 16px',
@@ -413,7 +413,7 @@ export function AIChatbot() {
               marginTop: '10px',
             }}
           >
-            {t('disclaimer')}
+            {translations('disclaimer')}
           </p>
         </div>
       </div>

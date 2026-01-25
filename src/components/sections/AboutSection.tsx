@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { COLORS } from '@/constants/colors';
 
 export function AboutSection() {
-  const t = useTranslations('about');
+  const translations = useTranslations('about');
 
   return (
     <section
@@ -28,7 +28,7 @@ export function AboutSection() {
               marginBottom: '16px',
             }}
           >
-            {t('label')}
+            {translations('label')}
           </p>
 
           <h2
@@ -41,9 +41,9 @@ export function AboutSection() {
               letterSpacing: '-0.02em',
             }}
           >
-            {t('headingLine1')}
+            {translations('headingLine1')}
             <br />
-            {t('headingLine2')}
+            {translations('headingLine2')}
           </h2>
         </div>
         {/* Section Label */}
@@ -66,7 +66,7 @@ export function AboutSection() {
                 marginBottom: '24px',
               }}
             >
-              {t('bio1')}
+              {translations('bio1')}
             </p>
             <p
               style={{
@@ -76,7 +76,7 @@ export function AboutSection() {
                 lineHeight: 1.8,
               }}
             >
-              {t('bio2')}
+              {translations('bio2')}
             </p>
 
             {/* LinkedIn Link */}
@@ -109,7 +109,7 @@ export function AboutSection() {
               }}
             >
               <span>💼</span>
-              <span>{t('linkedinText')}</span>
+              <span>{translations('linkedinText')}</span>
               <span style={{ marginLeft: '4px' }}>→</span>
             </a>
           </div>

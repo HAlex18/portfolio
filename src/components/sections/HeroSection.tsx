@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { COLORS } from '@/constants/colors';
 
 export function HeroSection() {
-  const t = useTranslations('hero');
+  const translations = useTranslations('hero');
   return (
     <section
       id="home"
@@ -46,7 +46,7 @@ export function HeroSection() {
           animation: 'fadeInUp 0.8s ease-out',
         }}
       >
-        {t('greeting')}
+        {translations('greeting')}
       </p>
 
       {/* Name */}
@@ -62,7 +62,7 @@ export function HeroSection() {
           animation: 'fadeInUp 0.8s ease-out 0.1s both',
         }}
       >
-        {t('name')}
+        {translations('name')}
       </h1>
 
       {/* Title */}
@@ -76,7 +76,7 @@ export function HeroSection() {
           animation: 'fadeInUp 0.8s ease-out 0.2s both',
         }}
       >
-        {t('title')}
+        {translations('title')}
       </h2>
 
       {/* CTA Buttons */}
@@ -116,7 +116,7 @@ export function HeroSection() {
             e.currentTarget.style.borderColor = COLORS.accent;
           }}
         >
-          {t('viewProjects')}
+          {translations('viewProjects')}
         </button>
         <button
           onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
@@ -138,7 +138,7 @@ export function HeroSection() {
           onMouseOver={(e) => (e.currentTarget.style.borderColor = COLORS.accent)}
           onMouseOut={(e) => (e.currentTarget.style.borderColor = COLORS.border)}
         >
-          {t('contactMe')}
+          {translations('contactMe')}
         </button>
       </div>
 
@@ -156,7 +156,9 @@ export function HeroSection() {
           animation: 'bounce 2s ease-in-out infinite',
         }}
       >
-        <span style={{ fontSize: '12px', color: COLORS.textDim, letterSpacing: '0.1em' }}>{t('scroll')}</span>
+        <span style={{ fontSize: '12px', color: COLORS.textDim, letterSpacing: '0.1em' }}>
+          {translations('scroll')}
+        </span>
         <div
           style={{
             width: '1px',
