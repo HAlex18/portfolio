@@ -12,6 +12,7 @@ export * from './projects';
 export * from './skills';
 export * from './contact';
 export * from './chatbot';
+export * from './developer';
 
 // Utility types
 export * from './rateLimit';

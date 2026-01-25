@@ -1,15 +1,8 @@
 'use client';
 
 import { COLORS } from '@/constants/colors';
-import type { Project } from '@/types';
+import { projects } from '@/data';
 import { PlanetOrb } from '@/components/ui';
-
-const projects: Project[] = [
-  { id: '1', title: 'Neural Engine', subtitle: 'AI / ML', icon: '🧠' },
-  { id: '2', title: 'Cloud Platform', subtitle: 'Full Stack', icon: '☁️' },
-  { id: '3', title: 'Data Cosmos', subtitle: 'Engineering', icon: '📊' },
-  { id: '4', title: 'Mobile Galaxy', subtitle: 'React Native', icon: '📱' },
-];
 
 export function ProjectsSection() {
   return (
