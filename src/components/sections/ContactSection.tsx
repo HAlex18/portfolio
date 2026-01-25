@@ -31,8 +31,7 @@ export function ContactSection() {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim() || !emailRegex.test(formData.email)) {
+    if (!formData.email.trim() || !isValidEmail(formData.email.trim())) {
       setStatus('error');
       setErrorMessage(translations('validation.emailInvalid'));
       return;

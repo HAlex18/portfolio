@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { COLORS } from '@/constants/colors';
 import { CONFIG } from '@/config';
 import { throttle } from '@/utils/throttle';
@@ -9,16 +9,23 @@ import { Navigation, Footer } from '@/components/layout';
 import { HeroSection, AboutSection, ProjectsSection, SkillsSection, ContactSection } from '@/components/sections';
 import { AIChatbot } from '@/components/features';
 
+const SECTIONS = ['home', 'about', 'projects', 'skills', 'contact'] as const;
+
 export default function Home() {
   const [activeSection, setActiveSection] = useState('home');
+  const sectionRefs = useRef<Map<string, HTMLElement | null>>(new Map());
 
   useEffect(() => {
+    // Cache element references once on mount
+    SECTIONS.forEach((id) => {
+      sectionRefs.current.set(id, document.getElementById(id));
+    });
+
     const handleScroll = throttle(() => {
-      const sections = ['home', 'about', 'projects', 'skills', 'contact'];
       const scrollPosition = window.scrollY + window.innerHeight / 3;
 
-      for (const section of sections) {
-        const element = document.getElementById(section);
+      for (const section of SECTIONS) {
+        const element = sectionRefs.current.get(section);
         if (element) {
           const { offsetTop, offsetHeight } = element;
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
