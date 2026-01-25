@@ -1,0 +1,57 @@
+{
+  "hero": {
+    "greeting": "Welcome to my universe",
+    "name": "Hiroko.A.Mizoguchi",
+    "title": "System Developer • Web Developer • AI Developer",
+    "viewProjects": "View Projects",
+    "contactMe": "Contact Me",
+    "scroll": "SCROLL"
+  },
+  "about": {
+    "label": "About Me",
+    "headingLine1": "Building the Future,",
+    "headingLine2": "One Line at a Time",
+    "bio1": "I'm a passionate developer who loves crafting elegant solutions to complex problems. With expertise spanning system architecture, web development, and artificial intelligence, I bring ideas to life through clean, efficient code.",
+    "bio2": "When I'm not coding, you'll find me exploring new technologies, contributing to open source, or diving deep into the latest AI research. I believe in continuous learning and pushing the boundaries of what's possible.",
+    "linkedinText": "View my experience on LinkedIn",
+    "stats": {
+      "yearsExperience": "Years Experience",
+      "projectsCompleted": "Projects Completed",
+      "technologies": "Technologies",
+      "linesOfCode": "Lines of Code"
+    }
+  },
+  "contact": {
+    "label": "Get In Touch",
+    "heading": "Let's Work Together",
+    "description": "Have a project in mind? I'd love to hear from you. Send me a message and let's create something amazing.",
+    "form": {
+      "name": "Name",
+      "company": "Company",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Send Message ✦",
+      "submitting": "Sending..."
+    },
+    "validation": {
+      "nameRequired": "Please enter your name (minimum 2 characters)",
+      "emailInvalid": "Please enter a valid email address",
+      "messageRequired": "Please enter a message (minimum 10 characters)",
+      "rateLimited": "Too many submissions. Please try again in an hour."
+    },
+    "success": "Message sent successfully! I'll get back to you soon.",
+    "socialHeading": "Or reach out directly"
+  },
+  "chat": {
+    "title": "Portfolio Assistant",
+    "subtitle": "Powered by Claude AI",
+    "welcomeMessage": "Hey! I'm an AI assistant here to tell you about this developer. Ask me anything about their skills, projects, or experience!",
+    "placeholder": "Ask about me...",
+    "disclaimer": "AI may make mistakes • Built to showcase AI skills",
+    "rateLimited": "You've sent too many messages. Please try again in an hour, or use the contact form below.",
+    "connectionError": "Oops! I'm having connection issues. Please try again or use the contact form below.",
+    "ariaOpenChat": "Open chat",
+    "ariaCloseChat": "Close chat",
+    "ariaDismissChat": "Dismiss chat"
+  }
+}

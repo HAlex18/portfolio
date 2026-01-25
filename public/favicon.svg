@@ -1,0 +1,21 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Favicon 32x32 - Transparent background -->
+  
+  <!-- Orbital Ring -->
+  <ellipse 
+    cx="16" 
+    cy="16" 
+    rx="11" 
+    ry="4.5" 
+    stroke="#d4a054" 
+    stroke-width="1.5" 
+    fill="none"
+    transform="rotate(-15, 16, 16)"
+  />
+  
+  <!-- Stars -->
+  <circle cx="8" cy="12" r="2" fill="#f5c97a"/>
+  <circle cx="24" cy="14" r="1.5" fill="#f5c97a"/>
+  <circle cx="20" cy="21" r="1.8" fill="#f5c97a"/>
+  <circle cx="7" cy="18" r="1.6" fill="#f5c97a"/>
+</svg>
