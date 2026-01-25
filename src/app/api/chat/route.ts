@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CONFIG } from '@/config';
+import { developerProfile } from '@/data';
 import { getClientIP, chatRateLimiter } from '@/utils/rateLimit';
 import { sanitizeInput } from '@/utils/validation';
+import { validateOrigin } from '@/utils/csrf';
 
 // ============================================
 // CHAT API ROUTE - Secure Anthropic Proxy
@@ -11,17 +13,14 @@ import { sanitizeInput } from '@/utils/validation';
 const SYSTEM_PROMPT = `You are a friendly AI assistant on a developer's portfolio website. Your job is to answer questions about them.
 
 Here's information about the developer:
-- Name: [Your Name]
-- Role: System Developer, Web Developer, AI Developer
-- Experience: 5+ years in software development
-- Skills: TypeScript, Python, Rust, Go, React, Next.js, Node.js, FastAPI, PostgreSQL, PyTorch, TensorFlow, LangChain, Docker, Kubernetes, AWS
+- Name: ${developerProfile.name}
+- Role: ${developerProfile.role}
+- Experience: ${developerProfile.experience}
+- Skills: ${developerProfile.skills}
 - Projects:
-  1. Neural Engine - AI/ML project
-  2. Cloud Platform - Full stack application
-  3. Data Cosmos - Data engineering project
-  4. Mobile Galaxy - React Native mobile app
-- Interests: Open source, AI research, new technologies
-- Contact: Available for freelance and full-time opportunities
+  ${developerProfile.projects}
+- Interests: ${developerProfile.interests}
+- Contact: ${developerProfile.availability}
 
 Be helpful, concise, and friendly. Keep responses brief (2-3 sentences max unless more detail is asked). If asked something you don't know, suggest they use the contact form. Add occasional emoji to be personable but don't overdo it.`;
 
@@ -36,6 +35,10 @@ interface ChatRequestBody {
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF protection - validate Origin header
+    const originError = validateOrigin(request);
+    if (originError) return originError;
+
     // Check API key
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
